@@ -1,0 +1,110 @@
+
+# Entradas do programa:
+# R: cor red
+# G: cor green
+# B: de braulio e de blue
+# X: distância da esquerda do quadrado
+# Y: distância do topo do quadrado
+# Tamanho
+
+
+.text
+main: 
+      addi $2, $0, 5
+      syscall
+      add $8, $0, $2 # $8 = R
+      addi $2, $0, 5
+      syscall
+      add $9, $0, $2 # $9 = G
+      addi $2, $0, 5
+      syscall
+      add $10, $0, $2 # $10 = B
+      
+      # 0x00RRGGBB
+      sll $11, $8, 16
+      sll $9, $9, 8
+      or $11, $11, $9
+      or $11, $11, $10
+      
+      # 8192 ENDEREÇOS
+     lui $13, 0x1001
+     
+      # addi $12, $0, 8192
+      # addi $12, $0, 129
+
+entrada:
+      addi $2, $0, 5
+      syscall
+      add $20, $0, $2 # $20 = X
+      addi $2, $0, 5
+      syscall
+      add $21, $0, $2 # $21 = Y
+      addi $2, $0, 5
+      syscall
+      add $22, $0, $2 # $22 = T
+      
+      add $15, $0, $22 # $22 = preenchimento
+      
+      # definindo tamanho
+      add $12, $0, $22
+      
+      # calculando X na tela
+      mul $25, $20, 4 
+      add $13, $13, $25
+      
+      # calculando Y na tela
+      mul $25, $21, 512 # 4 * 128 
+      add $13, $13, $25
+      
+
+linhatopo: 
+      beq $12, $0, preenchimento
+      sw $11, 0($13)
+      addi $13, $13, 4
+      addi $12, $12, -1      
+      j linhatopo
+      
+preenchimento:
+      beq $15, $0, prelinhafinal
+      
+      # definindo tamanho
+      lui $13, 0x1001
+      add $12, $0, $22
+      
+      # calculando X na tela
+      mul $25, $20, 4 
+      add $13, $13, $25
+      
+      # calculando Y na tela
+      addi $21, $21, 1      
+      mul $25, $21, 512 # 4 * 128 
+      add $13, $13, $25
+
+      addi $15, $15, -1      
+      j linhatopo
+ 
+prelinhafinal: add $12, $0, $22
+      
+      # 8192 ENDEREÇOS
+      lui $13, 0x1001
+      
+      # calculando X na tela
+      mul $25, $20, 4 
+      add $13, $13, $25
+      
+      # calculando Y na tela
+      addi $21, $21, 5      
+      mul $25, $21, 512 # 4 * 128 
+      add $13, $13, $25
+      
+      j linhafinal
+
+linhafinal: beq $12, $0, term
+      sw $11, 0($13)
+      addi $13, $13, 4
+      addi $12, $12, -1      
+      j linhafinal 
+                                             
+                                                                                         
+term: addi $2, $0, 10
+      syscall
